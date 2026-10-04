@@ -8,6 +8,7 @@ on:
       - '.github/workflows/publish-model.yml'
       - 'scripts/package_model.py'
       - 'model/**'
+      - 'RELEASE.md'
 
 permissions:
   contents: read
@@ -35,6 +36,9 @@ jobs:
           else
             echo 'exists=false' >> "$GITHUB_OUTPUT"
           fi
+      - name: Update published release notes
+        if: steps.release.outputs.exists == 'true'
+        run: gh release edit "$MODEL_TAG" --repo "$GITHUB_REPOSITORY" --notes-file RELEASE.md
       - name: Prepare archive utility
         if: steps.release.outputs.exists != 'true'
         run: |
