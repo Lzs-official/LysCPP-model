@@ -1,0 +1,57 @@
+name: Publish DPLM base model
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-model.yml'
+      - 'scripts/package_model.py'
+      - 'model/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-dplm-base
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      MODEL_TAG: dplm2-bit650m-40cf303
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check existing release
+        id: release
+        run: |
+          if gh release view "$MODEL_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'exists=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'exists=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Prepare archive utility
+        if: steps.release.outputs.exists != 'true'
+        run: |
+          if ! command -v 7z >/dev/null && ! command -v 7zz >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y 7zip
+          fi
+      - name: Download, package and verify
+        if: steps.release.outputs.exists != 'true'
+        run: python3 scripts/package_model.py
+      - name: Upload verified files to draft release
+        if: steps.release.outputs.exists != 'true'
+        run: |
+          gh release create "$MODEL_TAG" dist/* --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --draft \
+            --title 'DPLM-2.1 Bit 650M — 原始预训练底座' \
+            --notes-file RELEASE.md
+      - name: Publish release
+        if: steps.release.outputs.exists != 'true'
+        run: gh release edit "$MODEL_TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest

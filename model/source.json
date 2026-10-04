@@ -1,0 +1,14 @@
+{
+  "model_id": "airkingbd/dplm2_bit_650m",
+  "revision": "40cf303d79335c4c8f1b13d08fbc3187e8ba9222",
+  "sha256": "27d73fca4faf9ed5440ae8952c3711c366686d3e5ee49d188bb36cef9d94ff48",
+  "size_bytes": 2616587562,
+  "license": "Apache-2.0",
+  "url": "https://huggingface.co/airkingbd/dplm2_bit_650m/resolve/40cf303d79335c4c8f1b13d08fbc3187e8ba9222/pytorch_model.bin?download=true",
+  "paper": "https://arxiv.org/abs/2504.11454",
+  "cpp_specific_pretraining": false,
+  "companion_sha256": {
+    "config.json": "2c46390e2513accb5b4c70d6b2c6c0656859ec72936af06ee89d2397348bd85d",
+    "vocab.txt": "d6bd0a2b1a0bd0f8e10568cfd75443e62a4bcf794907e93f41a5f945baf3b900"
+  }
+}
